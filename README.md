@@ -3,7 +3,7 @@
 Repositori ini dibuat untuk menyimpan file-file development untuk tugas kelompok Bina Talenta Indonesia membuat aplikasi berbasis AI.
 
 ## Membuat Dataset
-Lihat guide yang kami ikuti [disini](https://ai.google.dev/edge/mediapipe/solutions/customization/gesture_recognizer)
+Lihat guide yang saya ikuti [disini](https://ai.google.dev/edge/mediapipe/solutions/customization/gesture_recognizer)
 1. Install Python 3.10 karena beberapa dependencies tidak kompatibel dengan versi Python terbaru
 2. Buat Virtual Environment. (opsional, tapi praktik developer yang baik dan bahagia.)  
     ```bash
@@ -28,7 +28,7 @@ Lihat guide yang kami ikuti [disini](https://ai.google.dev/edge/mediapipe/soluti
 
 ## Melatih Model
 
-Melatih model dapat dilakukan dengan sangat gampang dan berkah menggunakan Google Colab di (sini)
+Melatih model dapat dilakukan dengan sangat gampang dan berkah menggunakan Google Colab di [sini](https://github.com/oxraphc/finger-number-recognition/blob/main/MediaPipe_Model_Maker.ipynb).
 
 ## Static Web App
 
