@@ -1,3 +1,5 @@
+// Copyright © 2025 Caesar Ravsanjani
+
 import {
     GestureRecognizer,
     FilesetResolver,
@@ -14,7 +16,9 @@ const inferenceTime = document.getElementById('time-delay-counter');
 const leftValueElem = document.getElementById('left');
 const rightValueElem = document.getElementById('right');
 const operationResult = document.getElementById('result');
+const operationElem = document.getElementById('operation');
 
+let operationIndex = 0;
 let cameraStream = null;
 let gestureRecognizer;
 let lastVideoTime = -1;
@@ -73,6 +77,14 @@ if (await openCamera()) {
 }
 
 
+operationElem.addEventListener('click', () => {
+    const operations = ['+', '-', '*', '/', '^', '%'];
+    operationIndex++;
+    operationElem.innerText = operations[operationIndex % 6];
+    operation = operations[operationIndex % 6];
+})
+
+
 function getLandmarkColor(handednessIndex) {
     return handednessIndex === 0 ? "#00FF00" : "#FF0000"
 }
@@ -85,9 +97,16 @@ function getLineColor(handednessIndex) {
 
 // Start detecting the camera stream
 async function predictWebcam() {
-    let nowInMs = Date.now();
+    // Reset outputs first
     rightHandCVResultOutput.innerText = `RIGHT\nGestureCategory:\nConfidence:`
     leftHandCVResultOutput.innerText = `LEFT\nGestureCategory:\nConfidence:`
+    operationResult.innerText = '0'
+    rightValueElem.innerText = '0';
+    leftValueElem.innerText = '0';
+    rightValue = 0;
+    leftValue = 0;
+
+    let nowInMs = Date.now();
     if (camera.currentTime !== lastVideoTime) {
         lastVideoTime = camera.currentTime;
         
@@ -144,13 +163,13 @@ async function predictWebcam() {
                 leftValue = gestureCategoryInt;
             }
         }
-
         operationResult.innerText = evalFingers();
     }
     
     // Call this function again to keep predicting when the browser is ready.
     window.requestAnimationFrame(predictWebcam);
 }
+
 
 function categoryNameToInt(categoryName) {
     switch (categoryName) {
@@ -176,6 +195,7 @@ function categoryNameToInt(categoryName) {
             return 0;
     }
 }
+
 
 function evalFingers() {
     switch (operation) {
