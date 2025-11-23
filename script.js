@@ -10,11 +10,15 @@ const drawOverlay = document.getElementById('draw-overlay');
 const drawOverlayContext = drawOverlay.getContext('2d');
 const leftHandCVResultOutput = document.getElementById('left-hand-result');
 const rightHandCVResultOutput = document.getElementById('right-hand-result');
+const inferenceTime = document.getElementById('time-delay-counter');
 
 let cameraStream = null;
 let gestureRecognizer;
 let lastVideoTime = -1;
 let results = undefined;
+let timeStart;
+let timeEnd;
+let inferenceTimeMs
 
 let left_value = 0;
 let right_value = 0;
@@ -22,7 +26,7 @@ let operation = '+';
 let operationResult = 0;
 
 
-// Load Model
+// Load model
 console.log("Begin loading model.")
 const createGestureRecognizer = async () => {
     const vision = await FilesetResolver.forVisionTasks(
@@ -74,22 +78,31 @@ function getLandmarkColor(handednessIndex) {
 // "RIGHT" IS 0
 // "LEFT" IS 1
 function getLineColor(handednessIndex) {
-    return handednessIndex === 0 ? "#FF0000": "#00FF00"
+    return handednessIndex === 0 ? "#FF0000" : "#00FF00"
 }
 
 
-// Start detecting the stream.
+// Start detecting the camera stream
 async function predictWebcam() {
     let nowInMs = Date.now();
+    rightHandCVResultOutput.innerText = `RIGHT\nGestureCategory:\nConfidence:`
+    leftHandCVResultOutput.innerText = `LEFT\nGestureCategory:\nConfidence:`
     if (camera.currentTime !== lastVideoTime) {
         lastVideoTime = camera.currentTime;
+        
+        timeStart = performance.now()
+
         results = gestureRecognizer.recognizeForVideo(camera, nowInMs);
+        
+        timeEnd = performance.now()
+        inferenceTime.innerText = `Inference time (ms):\n ${Math.round(timeEnd - timeStart)}ms`
     }
 
     drawOverlayContext.save();
     drawOverlayContext.clearRect(0, 0, drawOverlay.width, drawOverlay.height);
     const drawingUtils = new DrawingUtils(drawOverlayContext);
 
+    // Draw landmarks
     if (results.landmarks) {
         for (let i = 0; i < results.landmarks.length; i++) {
             drawingUtils.drawConnectors(
@@ -112,11 +125,13 @@ async function predictWebcam() {
     }
     drawOverlayContext.restore();
 
+    // Show gesture result
     if (results.gestures.length > 0) {
         for (let i = 0; i < results.gestures.length; i++) {
             const gestureCategory = results.gestures[i][0].categoryName;
             const confidence_score = results.gestures[i][0].score;
             const confidence = Math.trunc(confidence_score * 100) / 100
+
             if (results.handednesses[i][0].index == 0) {
                 rightHandCVResultOutput.innerText = `RIGHT\nGestureCategory: ${gestureCategory}\nConfidence: ${confidence}`
             } else {
@@ -124,7 +139,7 @@ async function predictWebcam() {
             }
         }
     }
-
+    
     // Call this function again to keep predicting when the browser is ready.
     window.requestAnimationFrame(predictWebcam);
 }
