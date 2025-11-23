@@ -25,6 +25,18 @@ html::-webkit-scrollbar {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    padding: 0 2vw 2vw 2vw;
+}
+
+#header h1 {
+    /* font-size: 2vw; */
+    margin-bottom: 2vh;
+    text-align: center;
+}
+
+#header p {
+    margin: 0;
+    text-align: center;
 }
 
 #camera-input {
@@ -35,13 +47,15 @@ html::-webkit-scrollbar {
     max-width: 80vw;
     height: auto;
     border: 5px solid #808080;
-    box-sizing: border-box;
+    background-color: #808080;
+    box-sizing: content-box;
 }
 
 #camera {
     height: 100%;
-    max-width: 85vw;
+    max-width: 80vw;
     width: 640px;
+    transform: scaleX(-1);
 }
 
 #draw-overlay {
@@ -50,7 +64,20 @@ html::-webkit-scrollbar {
     right: 0;
     width: 100%;
     height: 100%;
+    transform: scaleX(-1);
     /* background-color: lightcoral; */
+}
+
+#count-result {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4vw;
+}
+
+#count-result p {
+    margin: 0;
+    font-size: 7vw;
 }
 
 #footer {
