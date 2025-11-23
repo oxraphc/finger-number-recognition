@@ -1,7 +1,7 @@
 import {
-  GestureRecognizer,
-  FilesetResolver,
-  DrawingUtils
+    GestureRecognizer,
+    FilesetResolver,
+    DrawingUtils
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
 
 
@@ -25,18 +25,18 @@ let result = 0;
 // Load Model
 console.log("Begin loading model.")
 const createGestureRecognizer = async () => {
-  const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
-  );
-  gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
-    baseOptions: {
-      modelAssetPath:
-        "model/finger_number_recognizer_v4.task",
-      delegate: "GPU"
-    },
-    runningMode: 'VIDEO',
-    numHands: 2
-  });
+    const vision = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
+    );
+    gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
+        baseOptions: {
+            modelAssetPath:
+                "model/finger_number_recognizer_v4.task",
+            delegate: "GPU"
+        },
+        runningMode: 'VIDEO',
+        numHands: 2
+    });
 };
 await createGestureRecognizer();
 console.log("Finished loading.")
@@ -45,22 +45,22 @@ console.log("Finished loading.")
 async function openCamera() {
     return new Promise(async (resolve) => {
         try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({
+            cameraStream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     aspectRatio: 16 / 9,
                 },
                 audio: false
             });
-        camera.srcObject = cameraStream;
-        await new Promise(resolve => camera.onloadedmetadata = resolve);
-        camera.play();
-        console.log('Camera opened.');
-        console.log(`Camera dimensions : ${camera.videoWidth} x ${camera.videoHeight}`);
-        resolve(true);
-    } catch (e) {
-        console.error('Error accessing camera: ', e);
-        resolve(false);
-    }
+            camera.srcObject = cameraStream;
+            await new Promise(resolve => camera.onloadedmetadata = resolve);
+            camera.play();
+            console.log('Camera opened.');
+            console.log(`Camera dimensions : ${camera.videoWidth} x ${camera.videoHeight}`);
+            resolve(true);
+        } catch (e) {
+            console.error('Error accessing camera: ', e);
+            resolve(false);
+        }
     })
 }
 if (await openCamera()) {
@@ -68,12 +68,21 @@ if (await openCamera()) {
 }
 
 
+function getLandmarkColor(handednessIndex) {
+    return handednessIndex === 0 ? "#00FF00" : "#FF0000"
+}
+
+function getLineColor(handednessIndex) {
+    return handednessIndex === 0 ? "#FF0000" : "#00FF00"
+}
+
+
 async function predictWebcam() {
     // Start detecting the stream.
     let nowInMs = Date.now();
     if (camera.currentTime !== lastVideoTime) {
-      lastVideoTime = camera.currentTime;
-      results = gestureRecognizer.recognizeForVideo(camera, nowInMs);
+        lastVideoTime = camera.currentTime;
+        results = gestureRecognizer.recognizeForVideo(camera, nowInMs);
     }
 
     drawOverlayContext.save();
@@ -81,23 +90,28 @@ async function predictWebcam() {
     const drawingUtils = new DrawingUtils(drawOverlayContext);
 
     if (results.landmarks) {
-      for (const landmarks of results.landmarks) {
-        drawingUtils.drawConnectors(
-          landmarks,
-          GestureRecognizer.HAND_CONNECTIONS,
-          {
-            color: "#00FF00",
-            lineWidth: 1
-          }
-        );
-        drawingUtils.drawLandmarks(landmarks, {
-          color: "#FF0000",
-          lineWidth: 0,
-          radius: 1
-        });
-      }
+        for (let i = 0; i < results.landmarks.length; i++) {
+            drawingUtils.drawConnectors(
+                results.landmarks[i],
+                GestureRecognizer.HAND_CONNECTIONS,
+                {
+                    color: getLineColor(results.handednesses[i][0].index),
+                    lineWidth: 1
+                }
+            );
+            drawingUtils.drawLandmarks(
+                results.landmarks[i],
+                {
+                    color: getLandmarkColor(results.handednesses[i][0].index),
+                    lineWidth: 0,
+                    radius: 1
+                }
+            );
+        }
     }
     drawOverlayContext.restore();
+
+
     // if (results.gestures.length > 0) {
     //   gestureOutput.style.display = "block";
     //   gestureOutput.style.width = videoWidth;
