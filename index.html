@@ -11,12 +11,15 @@
         <div id="header">
             <h1>AI Hitung Jumlah Jari</h1>
             <p>
-                Menggunakan AI untuk menjumlahkan jumlah isyarat angka kedua tangan.
+                Menggunakan AI untuk menjumlahkan jumlah isyarat angka kedua tangan.<br>
                 Powered with <a href="https://ai.google.dev/edge/mediapipe/solutions/tasks">MediaPipe Tasks</a>.
             </p>
         </div>
         <div id="main">
             <div id="camera-input">
+                <div id="cv-result">
+                    <p id="left-hand-result"></p>
+                </div>
                 <video id="camera" autoplay playsinline></video>
                 <canvas id="draw-overlay"></canvas>
             </div>
@@ -32,6 +35,6 @@
     <div id="footer">
         <p>Copyright © 2025 Caesar Ravsanjani</p>
     </div>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
