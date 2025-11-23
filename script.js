@@ -19,7 +19,7 @@ let results = undefined;
 let left_value = 0;
 let right_value = 0;
 let operation = '+';
-let result = 0;
+let operationResult = 0;
 
 
 // Load Model
@@ -71,14 +71,15 @@ if (await openCamera()) {
 function getLandmarkColor(handednessIndex) {
     return handednessIndex === 0 ? "#00FF00" : "#FF0000"
 }
-
+// "RIGHT" IS 0
+// "LEFT" IS 1
 function getLineColor(handednessIndex) {
-    return handednessIndex === 0 ? "#FF0000" : "#00FF00"
+    return handednessIndex === 0 ? "#FF0000": "#00FF00"
 }
 
 
+// Start detecting the stream.
 async function predictWebcam() {
-    // Start detecting the stream.
     let nowInMs = Date.now();
     if (camera.currentTime !== lastVideoTime) {
         lastVideoTime = camera.currentTime;
@@ -111,24 +112,19 @@ async function predictWebcam() {
     }
     drawOverlayContext.restore();
 
+    if (results.gestures.length > 0) {
+        for (let i = 0; i < results.gestures.length; i++) {
+            const gestureCategory = results.gestures[i][0].categoryName;
+            const confidence_score = results.gestures[i][0].score;
+            const confidence = Math.trunc(confidence_score * 100) / 100
+            if (results.handednesses[i][0].index == 0) {
+                rightHandCVResultOutput.innerText = `RIGHT\nGestureCategory: ${gestureCategory}\nConfidence: ${confidence}`
+            } else {
+                leftHandCVResultOutput.innerText = `LEFT\nGestureCategory: ${gestureCategory}\nConfidence: ${confidence}`
+            }
+        }
+    }
 
-    // if (results.gestures.length > 0) {
-    //   gestureOutput.style.display = "block";
-    //   gestureOutput.style.width = videoWidth;
-    //   const categoryName = results.gestures[0][0].categoryName;
-    //   const categoryName2 = null;
-    //   const categoryScore = parseFloat(
-    //     results.gestures[0][0].score * 100
-    //   ).toFixed(2);
-    //   const handedness = results.handednesses[0][0].displayName;
-    //   gestureOutput.innerText = `results.gestures[1] = ${results.gestures[0][0]}\n\nGestureRecognizer1: ${categoryName}\n GestureRecognizer2: ${categoryName2}\n  Confidence: ${categoryScore} %\n Handedness: ${handedness}`;
-
-    //   if (results.gestures.length > 1) {
-    //     console.log(`1 : ${results?.gestures[0][0].categoryName}\nright : ${results?.gestures[1][0].categoryName}`)
-    //   }
-    //   } else {
-    //   gestureOutput.style.display = "none";
-    // }
     // Call this function again to keep predicting when the browser is ready.
     window.requestAnimationFrame(predictWebcam);
 }

@@ -82,6 +82,10 @@ html::-webkit-scrollbar {
     background-color: rgba(255, 255, 255, 0.5);
 }
 
+#right-hand-result {
+    text-align: left;
+}
+
 #count-result {
     display: flex;
     align-items: center;
